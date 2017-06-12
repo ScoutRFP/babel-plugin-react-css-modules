@@ -145,7 +145,16 @@ export default ({
 
         if (path.node.specifiers.length === 0) {
           // eslint-disable-next-line no-process-env
-          styleImportName = process.env.NODE_ENV === 'test' ? 'random-test' : 'random-' + Math.random();
+          if (process.env.NODE_ENV === 'test') {
+            styleImportName = 'random-test';
+          } else {
+            const {node} = path;
+            const {value: fileName} = node.source;
+            const {loc} = node;
+            const {start, end} = loc;
+
+            styleImportName = fileName + start.line + start.column + end.line + end.column;
+          }
         } else if (path.node.specifiers.length === 1) {
           styleImportName = path.node.specifiers[0].local.name;
         } else {
